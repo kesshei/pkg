@@ -1,7 +1,7 @@
 'use strict';
 const path = require('path');
 const startArgs = PKG_START || {};
-let entryPoint;
+let entryPoint = 'app.js';
 const args = [];
 try {
   if (startArgs.main) {
