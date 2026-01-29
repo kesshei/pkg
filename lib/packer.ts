@@ -25,6 +25,11 @@ const bootstrapText = readFileSync(
   'utf8',
 ).replace('%VERSION%', version);
 
+const bootText = readFileSync(
+  require.resolve('../prelude/boot.js'),
+  'utf8',
+);
+
 const commonText = readFileSync(require.resolve('./common'), 'utf8');
 
 const diagnosticText = readFileSync(
@@ -159,21 +164,7 @@ export default function packer({
       }
     }
   }
-  const prelude =
-    `return (function (REQUIRE_COMMON, VIRTUAL_FILESYSTEM, DEFAULT_ENTRYPOINT, SYMLINKS, DICT, DOCOMPRESS) {
-        ${bootstrapText}${
-          log.debugMode ? diagnosticText : ''
-        }\n})(function (exports) {\n${commonText}\n},\n` +
-    `%VIRTUAL_FILESYSTEM%` +
-    `\n,\n` +
-    `%DEFAULT_ENTRYPOINT%` +
-    `\n,\n` +
-    `%SYMLINKS%` +
-    '\n,\n' +
-    '%DICT%' +
-    '\n,\n' +
-    '%DOCOMPRESS%' +
-    `\n);`;
-
+  const prelude = `return (function (PKG_START) {${bootText}\n})(%PKG_START%);`;
+  
   return { prelude, entrypoint, stripes };
 }

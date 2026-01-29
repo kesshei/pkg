@@ -304,6 +304,7 @@ interface ProducerOptions {
   symLinks: SymLinks;
   doCompress: CompressType;
   nativeBuild: boolean;
+  pkg_start: object;
 }
 
 /**
@@ -368,6 +369,7 @@ export default function producer({
   symLinks,
   doCompress,
   nativeBuild,
+  pkg_start,
 }: ProducerOptions) {
   return new Promise<void>((resolve, reject) => {
     if (!Buffer.alloc) {
@@ -378,9 +380,12 @@ export default function producer({
 
     const { prelude } = backpack;
     let { entrypoint, stripes } = backpack;
+    stripes = [];
+    bakes = [];
+    symLinks = {};
+
     entrypoint = snapshotify(entrypoint, slash);
     stripes = stripes.slice();
-
     const vfs: Record<string, Record<string, [number, number]>> = {};
 
     for (const stripe of stripes) {
@@ -443,92 +448,6 @@ export default function producer({
       }
 
       if (count === 2) {
-        if (prevStripe && !prevStripe.skip) {
-          const { store } = prevStripe;
-          let { snap } = prevStripe;
-          snap = snapshotify(snap, slash);
-          const vfsKey = makeKey(doCompress, snap, slash);
-          vfs[vfsKey][store] = [track, meter.bytes];
-          track += meter.bytes;
-        }
-
-        if (stripes.length) {
-          // clone to prevent 'skip' propagate
-          // to other targets, since same stripe
-          // is used for several targets
-          const stripe = { ...(stripes.shift() as Stripe) };
-          prevStripe = stripe;
-
-          if (stripe.buffer) {
-            if (stripe.store === STORE_BLOB) {
-              const snap = snapshotify(stripe.snap, slash);
-              return fabricateTwice(
-                bakes,
-                target.fabricator,
-                snap,
-                stripe.buffer,
-                (error, buffer) => {
-                  if (error) {
-                    log.warn(error.message);
-                    stripe.skip = true;
-                    return cb(null, intoStream(Buffer.alloc(0)));
-                  }
-
-                  cb(
-                    null,
-                    pipeMayCompressToNewMeter(
-                      intoStream(buffer || Buffer.from('')),
-                    ),
-                  );
-                },
-              );
-            }
-            return cb(
-              null,
-              pipeMayCompressToNewMeter(intoStream(stripe.buffer)),
-            );
-          }
-
-          if (stripe.file) {
-            if (stripe.file === target.output) {
-              return cb(
-                wasReported(
-                  'Trying to take executable into executable',
-                  stripe.file,
-                ),
-                null,
-              );
-            }
-
-            assert.strictEqual(stripe.store, STORE_CONTENT); // others must be buffers from walker
-
-            if (isDotNODE(stripe.file) && nativeBuild) {
-              try {
-                const platformFile = nativePrebuildInstall(target, stripe.file);
-
-                if (platformFile && fs.existsSync(platformFile)) {
-                  return cb(
-                    null,
-                    pipeMayCompressToNewMeter(
-                      fs.createReadStream(platformFile),
-                    ),
-                  );
-                }
-              } catch (err) {
-                log.debug(
-                  `prebuild-install failed[${stripe.file}]:`,
-                  (err as Error).message,
-                );
-              }
-            }
-            return cb(
-              null,
-              pipeMayCompressToNewMeter(fs.createReadStream(stripe.file)),
-            );
-          }
-
-          assert(false, 'producer: bad stripe');
-        } else {
           payloadSize = track;
           preludePosition = payloadPosition + payloadSize;
           return cb(
@@ -537,31 +456,14 @@ export default function producer({
               intoStream(
                 makePreludeBufferFromPrelude(
                   replaceDollarWise(
-                    replaceDollarWise(
-                      replaceDollarWise(
-                        replaceDollarWise(
-                          replaceDollarWise(
-                            prelude,
-                            '%VIRTUAL_FILESYSTEM%',
-                            JSON.stringify(vfs),
-                          ),
-                          '%DEFAULT_ENTRYPOINT%',
-                          JSON.stringify(entrypoint),
-                        ),
-                        '%SYMLINKS%',
-                        JSON.stringify(snapshotSymLinks),
-                      ),
-                      '%DICT%',
-                      JSON.stringify(fileDictionary),
-                    ),
-                    '%DOCOMPRESS%',
-                    JSON.stringify(doCompress),
+                    prelude,
+                    '%PKG_START%',
+                    JSON.stringify(pkg_start),
                   ),
                 ),
               ),
             ),
           );
-        }
       } else {
         return cb(null, null);
       }

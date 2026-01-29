@@ -100,6 +100,11 @@ interface DifferentResult {
   arch?: boolean;
 }
 
+interface PkgStart {
+  main: string;
+  args: string[];
+}
+
 function differentParts(targets: NodeTarget[]): DifferentResult {
   const nodeRanges: Record<string, boolean> = {};
   const platforms: Record<string, boolean> = {};
@@ -372,7 +377,25 @@ export async function exec(argv2: string[]) {
   // inputFin
 
   const inputFin = inputBin || input;
-
+  
+  const pkg_start: PkgStart = { main: '', args: [] };
+  const pkg_start_dir = path.dirname(inputFin);
+  const pkg_startPath = path.join(pkg_start_dir, "app.js");
+  const pkg_startJsonPath = path.join(pkg_start_dir, "app.json");
+  if (existsSync(pkg_startJsonPath)) {
+    try
+    {
+      const json = JSON.parse(readFileSync(pkg_startJsonPath, 'utf-8'));
+      if (json.main) {
+        pkg_start.main = json.main;
+      }
+      if (json.args) {
+        pkg_start.args = json.args;
+      }
+    }catch(e){}
+  } else if (existsSync(pkg_startPath)) {
+    pkg_start.main = path.basename(pkg_startPath);
+  }
   // config
 
   let config = argv.c || argv.config;
@@ -685,6 +708,7 @@ export async function exec(argv2: string[]) {
       symLinks,
       doCompress,
       nativeBuild,
+      pkg_start
     });
 
     if (target.platform !== 'win' && target.output) {
