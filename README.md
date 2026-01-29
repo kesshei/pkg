@@ -11,3 +11,14 @@ https://github.com/yao-pkg/pkg/releases/tag/v6.12.0
 # 新增另外打包非单文件的方式
 
 默认打开 app.js 文件，如果文件不存在则打开 package.json 中的 main 字段，否则，通过自有配置进行打开。
+
+app.json
+
+```
+{
+    "main": "bin/index.js",
+    "args": [
+        "test"
+    ]
+}
+```
