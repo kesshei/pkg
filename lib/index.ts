@@ -470,7 +470,7 @@ export async function exec(argv2: string[]) {
     output = name.slice(0, -ext.length || undefined);
     output = path.resolve(outputPath || '', output);
   } else {
-    output = path.resolve(output);
+    output = path.resolve(pkg_start_dir || '',output);
   }
 
   // targets

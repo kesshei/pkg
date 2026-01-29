@@ -13,15 +13,20 @@ try {
 } catch (err) {}
 if (process.argv[1] === 'PKG_DUMMY_ENTRYPOINT') {
   process.argv.splice(1, 1);
-}
-if (entryPoint) {
-  if (!process.argv[1]) {
-    process.argv[1] = entryPoint;
-  } else {
-    process.argv.push(entryPoint);
+  if (process.argv[1] && process.argv[1] !== '-') {
+    process.argv[1] = path.resolve(process.argv[1]);
   }
 }
-if (args.length > 0) {
-  process.argv.push(...args);
+if (process.argv.length === 1) {
+  if (entryPoint) {
+    if (!process.argv[1]) {
+      process.argv[1] = entryPoint;
+    } else {
+      process.argv.push(entryPoint);
+    }
+  }
+  if (args.length > 0) {
+    process.argv.push(...args);
+  }
 }
 return { undoPatch: true };

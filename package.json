@@ -24,7 +24,7 @@
   "scripts": {
     "clean": "rimraf lib-es5",
     "build": "npm run clean && tsc",
-    "start": "node lib-es5/bin.js C:\\Users\\Administrator\\Desktop\\nodeDemo\\nodePKG\\index.js --targets node20-linux-x64 --output C:\\Users\\Administrator\\Desktop\\nodeDemo\\nodePKG\\myapp.exe",
+    "start": "node lib-es5/bin.js C:\\Users\\Administrator\\Desktop\\nodeDemo\\nodeIPC\\app.js --targets node20-win-x64 --output myapp.exe",
     "start1": "tsc --watch",
     "lint": "npm run lint:style && npm run lint:code",
     "lint:style": "prettier -c \"{lib,prelude,test}/**/*.{ts,js}\"",
