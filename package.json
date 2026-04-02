@@ -1,12 +1,12 @@
 {
-  "name": "@yao-pkg/pkg",
-  "version": "6.12.0",
+  "name": "pkgnew",
+  "version": "0.0.1",
   "description": "Package your Node.js project into an executable",
   "main": "lib-es5/index.js",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yao-pkg/pkg.git"
+    "url": "git+https://github.com/kesshei/pkg.git"
   },
   "types": "lib-es5/index.d.ts",
   "bin": {
@@ -72,7 +72,7 @@
     "@typescript-eslint/parser": "^6.7.4",
     "esbuild": "^0.24.0",
     "esbuild-register": "^3.6.0",
-    "eslint": "^8.50.0",
+    "eslint": "^8.57.1",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-airbnb-typescript": "^17.1.0",
     "eslint-config-prettier": "^9.0.0",
