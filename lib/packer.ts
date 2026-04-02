@@ -19,19 +19,16 @@ import { FileRecord, FileRecords, SymLinks } from './types';
 const { version } = JSON.parse(
   readFileSync(path.join(__dirname, '../package.json'), 'utf-8'),
 );
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const bootstrapText = readFileSync(
   require.resolve('../prelude/bootstrap.js'),
   'utf8',
 ).replace('%VERSION%', version);
 
-const bootText = readFileSync(
-  require.resolve('../prelude/boot.js'),
-  'utf8',
-);
-
+const bootText = readFileSync(require.resolve('../prelude/boot.js'), 'utf8');
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const commonText = readFileSync(require.resolve('./common'), 'utf8');
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const diagnosticText = readFileSync(
   require.resolve('../prelude/diagnostic.js'),
   'utf8',
@@ -165,6 +162,6 @@ export default function packer({
     }
   }
   const prelude = `return (function (PKG_START) {${bootText}\n})(%PKG_START%);`;
-  
+
   return { prelude, entrypoint, stripes };
 }

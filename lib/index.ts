@@ -377,24 +377,25 @@ export async function exec(argv2: string[]) {
   // inputFin
 
   const inputFin = inputBin || input;
-  
-  const pkg_start: PkgStart = { main: '', args: [] };
-  const pkg_start_dir = path.dirname(inputFin);
-  const pkg_startPath = path.join(pkg_start_dir, "app.js");
-  const pkg_startJsonPath = path.join(pkg_start_dir, "app.json");
-  if (existsSync(pkg_startJsonPath)) {
-    try
-    {
-      const json = JSON.parse(readFileSync(pkg_startJsonPath, 'utf-8'));
+
+  const pkgStart: PkgStart = { main: '', args: [] };
+  const pkgStartDir = path.dirname(inputFin);
+  const pkgStartPath = path.join(pkgStartDir, 'app.js');
+  const pkgStartJsonPath = path.join(pkgStartDir, 'app.json');
+  if (existsSync(pkgStartJsonPath)) {
+    try {
+      const json = JSON.parse(readFileSync(pkgStartJsonPath, 'utf-8'));
       if (json.main) {
-        pkg_start.main = json.main;
+        pkgStart.main = json.main;
       }
       if (json.args) {
-        pkg_start.args = json.args;
+        pkgStart.args = json.args;
       }
-    }catch(e){}
-  } else if (existsSync(pkg_startPath)) {
-    pkg_start.main = path.basename(pkg_startPath);
+    } catch (e) {
+      // 忽略错误，不处理
+    }
+  } else if (existsSync(pkgStartPath)) {
+    pkgStart.main = path.basename(pkgStartPath);
   }
   // config
 
@@ -470,7 +471,7 @@ export async function exec(argv2: string[]) {
     output = name.slice(0, -ext.length || undefined);
     output = path.resolve(outputPath || '', output);
   } else {
-    output = path.resolve(pkg_start_dir || '',output);
+    output = path.resolve(pkgStartDir || '', output);
   }
 
   // targets
@@ -708,7 +709,7 @@ export async function exec(argv2: string[]) {
       symLinks,
       doCompress,
       nativeBuild,
-      pkg_start
+      pkg_start: pkgStart,
     });
 
     if (target.platform !== 'win' && target.output) {

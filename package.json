@@ -1,6 +1,6 @@
 {
   "name": "pkgnew",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Package your Node.js project into an executable",
   "main": "lib-es5/index.js",
   "license": "MIT",
@@ -10,7 +10,7 @@
   },
   "types": "lib-es5/index.d.ts",
   "bin": {
-    "pkg": "lib-es5/bin.js"
+    "pkgnew": "lib-es5/bin.js"
   },
   "files": [
     "lib-es5/*.js",
@@ -27,8 +27,8 @@
     "start": "node lib-es5/bin.js C:\\Users\\Administrator\\Desktop\\nodeDemo\\nodeIPC\\app.js --targets node20-win-x64 --output myapp.exe",
     "start1": "tsc --watch",
     "lint": "npm run lint:style && npm run lint:code",
-    "lint:style": "prettier -c \"{lib,prelude,test}/**/*.{ts,js}\"",
-    "lint:code": "eslint lib prelude test",
+    "lint:style": "prettier -c \"lib/**/*.{ts,js}\"",
+    "lint:code": "eslint lib",
     "fix": "npm run lint:style -- -w && npm run lint:code -- --fix",
     "prepare": "npm run build",
     "prepublishOnly": "npm run lint",

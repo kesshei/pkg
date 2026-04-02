@@ -7,9 +7,11 @@ import intoStream from 'into-stream';
 import path from 'path';
 import streamMeter from 'stream-meter';
 import { Readable } from 'stream';
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { STORE_BLOB, STORE_CONTENT, isDotNODE, snapshotify } from './common';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { log, wasReported } from './log';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { fabricateTwice } from './fabricator';
 import { platform, SymLinks, Target } from './types';
 import { Stripe } from './packer';
@@ -225,7 +227,7 @@ function getPrebuildEnvPrefix(pkgName: string): string {
     .replace(/[^a-zA-Z0-9]/g, '_')
     .replace(/^_/, '')}`;
 }
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function nativePrebuildInstall(target: Target, nodeFile: string) {
   const prebuildInstall = path.join(
     __dirname,
@@ -368,6 +370,7 @@ export default function producer({
   target,
   symLinks,
   doCompress,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   nativeBuild,
   pkg_start,
 }: ProducerOptions) {
@@ -383,7 +386,7 @@ export default function producer({
     stripes = [];
     bakes = [];
     symLinks = {};
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     entrypoint = snapshotify(entrypoint, slash);
     stripes = stripes.slice();
     const vfs: Record<string, Record<string, [number, number]>> = {};
@@ -411,6 +414,7 @@ export default function producer({
       meter = streamMeter();
       return s.pipe(meter);
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     function pipeMayCompressToNewMeter(s: Readable): streamMeter.StreamMeter {
       if (doCompress === CompressType.GZip) {
         return pipeToNewMeter(s.pipe(createGzip()));
@@ -428,8 +432,9 @@ export default function producer({
 
     const binaryBuffer = fs.readFileSync(target.binaryPath);
     const placeholders = discoverPlaceholders(binaryBuffer);
-
-    let track = 0;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const track = 0;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let prevStripe: Stripe;
 
     let payloadPosition: number;
@@ -448,25 +453,24 @@ export default function producer({
       }
 
       if (count === 2) {
-          payloadSize = track;
-          preludePosition = payloadPosition + payloadSize;
-          return cb(
-            null,
-            next(
-              intoStream(
-                makePreludeBufferFromPrelude(
-                  replaceDollarWise(
-                    prelude,
-                    '%PKG_START%',
-                    JSON.stringify(pkg_start),
-                  ),
+        payloadSize = track;
+        preludePosition = payloadPosition + payloadSize;
+        return cb(
+          null,
+          next(
+            intoStream(
+              makePreludeBufferFromPrelude(
+                replaceDollarWise(
+                  prelude,
+                  '%PKG_START%',
+                  JSON.stringify(pkg_start),
                 ),
               ),
             ),
-          );
-      } else {
-        return cb(null, null);
+          ),
+        );
       }
+      return cb(null, null);
     })
       .on('error', (error) => {
         reject(error);
